@@ -28,6 +28,7 @@ public class ProductServiceImpl implements IProductService {
     } //veya sınıfın üstüne @RequiredArgsConstructor ekleyebilirsin ve constructor yazmana gerek kalmaz.
 
     @Override
+    @Transactional
     public ProductResponse createProduct(ProductRequest productRequest) {
         Product product = productMapper.toEntity(productRequest);
         Product savedProduct = productRepository.save(product);
@@ -38,26 +39,41 @@ public class ProductServiceImpl implements IProductService {
 
     @Override
     public ProductResponse getProductById(UUID productId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getProductById'");
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found with id: " + productId));
+        return productMapper.toResponse(product);
+
     }
 
     @Override
     public List<ProductResponse> getAllProducts() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getAllProducts'");
+        return productRepository.findAll()
+                .stream() // Stream kullanarak tüm ürünleri dolaşıyoruz
+                .map(productMapper::toResponse) // Her bir ürünü ProductResponse'a dönüştürüyoruz
+                .toList();
     }
 
     @Override
+    @Transactional
     public ProductResponse updateProduct(UUID productId, ProductRequest productRequest) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'updateProduct'");
+        Product product = productRepository.findById(productId)
+                        .orElseThrow(() -> new RuntimeException("Product not found with id: " + productId));;
+        Product productToUpdate = productMapper.toEntity(productRequest);
+        product.setName(productToUpdate.getName());
+        product.setPrice(productToUpdate.getPrice());
+        product.setDescription(productToUpdate.getDescription());
+        product.setStockQuantity(productToUpdate.getStockQuantity());
+        Product updatedProduct = productRepository.save(product);
+        return productMapper.toResponse(updatedProduct);
+
     }
 
     @Override
+    @Transactional
     public void deleteProduct(UUID productId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'deleteProduct'");
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found with id: " + productId));
+        productRepository.delete(product);
     }
     
 }
