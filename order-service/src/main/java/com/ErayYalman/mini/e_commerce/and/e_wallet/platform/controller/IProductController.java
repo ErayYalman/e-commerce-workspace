@@ -1,4 +1,4 @@
-package com.ErayYalman.mini.e_commerce.and.e_wallet.platform.service;
+package com.ErayYalman.mini.e_commerce.and.e_wallet.platform.controller;
 
 import java.util.List;
 import java.util.UUID;
@@ -7,16 +7,17 @@ import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.dto.request.CreatePr
 import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.dto.request.UpdateProductRequest;
 import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.dto.response.ProductResponse;
 
-public interface IProductService {
+public interface IProductController {
     ProductResponse createProduct(CreateProductRequest productRequest);
 
     ProductResponse getProductById(UUID productId);
 
-    List<ProductResponse> getAllProducts();
+    List<ProductResponse> getAllProducts(); 
 
     ProductResponse updateProduct(UUID productId, UpdateProductRequest productRequest);
-
+    
     void deleteProduct(UUID productId);
 
 
+        
 }

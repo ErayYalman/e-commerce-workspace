@@ -12,7 +12,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ProductRequest {
+public class CreateProductRequest {
     
     @NotBlank
     @Size(max = 100)

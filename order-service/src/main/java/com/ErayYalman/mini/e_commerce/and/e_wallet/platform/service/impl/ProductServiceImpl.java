@@ -5,10 +5,11 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
-import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.dto.request.ProductRequest;
+import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.dto.request.CreateProductRequest;
+import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.dto.request.UpdateProductRequest;
 import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.dto.response.ProductResponse;
 import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.entity.Product;
-import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.mapper.ProductMapper;
+import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.mapper.CreateProductMapper;
 import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.repository.ProductRepository;
 import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.service.IProductService;
 
@@ -20,16 +21,16 @@ import jakarta.transaction.Transactional;
 public class ProductServiceImpl implements IProductService {
 
     private final ProductRepository productRepository;
-    private final ProductMapper productMapper;
+    private final CreateProductMapper productMapper;
 
-    public ProductServiceImpl(ProductRepository productRepository, ProductMapper productMapper) {
+    public ProductServiceImpl(ProductRepository productRepository, CreateProductMapper productMapper) {
         this.productRepository = productRepository;
         this.productMapper = productMapper;
     } //veya sınıfın üstüne @RequiredArgsConstructor ekleyebilirsin ve constructor yazmana gerek kalmaz.
 
     @Override
     @Transactional
-    public ProductResponse createProduct(ProductRequest productRequest) {
+    public ProductResponse createProduct(CreateProductRequest productRequest) {
         Product product = productMapper.toEntity(productRequest);
         Product savedProduct = productRepository.save(product);
         ProductResponse response = productMapper.toResponse(savedProduct);
@@ -55,17 +56,12 @@ public class ProductServiceImpl implements IProductService {
 
     @Override
     @Transactional
-    public ProductResponse updateProduct(UUID productId, ProductRequest productRequest) {
+    public ProductResponse updateProduct(UUID productId, UpdateProductRequest productRequest) {
         Product product = productRepository.findById(productId)
-                        .orElseThrow(() -> new RuntimeException("Product not found with id: " + productId));;
-        Product productToUpdate = productMapper.toEntity(productRequest);
-        product.setName(productToUpdate.getName());
-        product.setPrice(productToUpdate.getPrice());
-        product.setDescription(productToUpdate.getDescription());
-        product.setStockQuantity(productToUpdate.getStockQuantity());
+                .orElseThrow(() -> new RuntimeException("Product not found with id: " + productId));
+        productMapper.updateProductFromRequest(productRequest, product);
         Product updatedProduct = productRepository.save(product);
         return productMapper.toResponse(updatedProduct);
-
     }
 
     @Override

@@ -27,7 +27,7 @@ public class Product {
     private String name;
 
     @Column(name = "sku", nullable = false, unique = true, length = 50)
-    private String sku;
+    private String sku; //ürün kodu
 
     @Column(name = "description")
     private String description;
