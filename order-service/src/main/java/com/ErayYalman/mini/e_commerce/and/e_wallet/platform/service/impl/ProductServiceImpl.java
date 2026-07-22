@@ -9,6 +9,7 @@ import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.dto.request.CreatePr
 import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.dto.request.UpdateProductRequest;
 import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.dto.response.ProductResponse;
 import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.entity.Product;
+import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.exception.ProductNotFoundException;
 import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.mapper.CreateProductMapper;
 import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.repository.ProductRepository;
 import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.service.IProductService;
@@ -41,7 +42,7 @@ public class ProductServiceImpl implements IProductService {
     @Override
     public ProductResponse getProductById(UUID productId) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Product not found with id: " + productId));
+                .orElseThrow(() -> new ProductNotFoundException(productId));
         return productMapper.toResponse(product);
 
     }
@@ -58,7 +59,7 @@ public class ProductServiceImpl implements IProductService {
     @Transactional
     public ProductResponse updateProduct(UUID productId, UpdateProductRequest productRequest) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Product not found with id: " + productId));
+                .orElseThrow(() -> new ProductNotFoundException(productId));
         productMapper.updateProductFromRequest(productRequest, product);
         Product updatedProduct = productRepository.save(product);
         return productMapper.toResponse(updatedProduct);
