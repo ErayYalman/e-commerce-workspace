@@ -12,8 +12,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.exception.BusinessException;
 import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.exception.ErrorResponse;
-import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.exception.ProductNotFoundException;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -21,22 +21,31 @@ import jakarta.servlet.http.HttpServletRequest;
 // bir anotasyondur. Bu anotasyon, uygulama genelinde meydana gelen istisnaları yakalamak ve uygun yanıtları döndürmek için kullanılır.
 public class GlobalExceptionHandler {
     
-    @ExceptionHandler(ProductNotFoundException.class) // @ExceptionHandler, belirli bir istisna türünü yakalamak için kullanılır.
-    public ResponseEntity<ErrorResponse> handleProductNotFoundException(ProductNotFoundException ex, HttpServletRequest request) {
+    @ExceptionHandler(BusinessException.class) // @ExceptionHandler, belirli bir istisna türünü yakalamak için kullanılır.
+    public ResponseEntity<ErrorResponse> handleBusinessException(BusinessException ex, HttpServletRequest request) {
+
+        HttpStatus status = ex.getErrorCode().getHttpStatus(); // BusinessException sınıfının alt sınıflarından gelen istisnaların 
+        // HTTP durum kodunu almak için kullanılır.
+        
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .timestamp(Instant.now())
-                .status(HttpStatus.NOT_FOUND.value())
-                .error(HttpStatus.NOT_FOUND.getReasonPhrase())
+                .status(status.value())
+                .error(status.getReasonPhrase())
+                .errorCode(ex.getErrorCode().name())
                 .message(ex.getMessage())
                 .path(request.getRequestURI())
-                .build();
-        return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
+                .build(); //hepsini toplayıp ErrorResponse nesnesi oluşturuyoruz. Bu nesne, hata yanıtının içeriğini temsil eder ve
+                // HTTP yanıtında döndürülecek bilgileri içerir.
+        return ResponseEntity // ResponseEntity, HTTP yanıtını temsil eden bir sınıftır. Bu sınıf, yanıtın durum kodunu, 
+        // başlıklarını ve gövdesini ayarlamak için kullanılır.
+                .status(status)
                 .body(errorResponse);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException ex, HttpServletRequest request) {
+// MethodArgumentNotValidException, Spring Boot uygulamalarında, bir metodun parametrelerinin doğrulama kurallarına uymadığında 
+// fırlatılan bir istisnadır. Bu istisna, genellikle @Valid veya @Validated anotasyonları ile işaretlenmiş metod parametrelerinde meydana gelir.
        
         Map<String, String> validationErrors = ex.getBindingResult()
                 .getFieldErrors()
