@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.dto.request.CreateProductRequest;
 import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.dto.request.UpdateProductRequest;
@@ -14,7 +15,7 @@ import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.mapper.CreateProduct
 import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.repository.ProductRepository;
 import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.service.IProductService;
 
-import jakarta.transaction.Transactional;
+
 
 
 @Service

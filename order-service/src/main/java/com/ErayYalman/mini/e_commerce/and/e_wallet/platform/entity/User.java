@@ -6,7 +6,7 @@ import java.util.UUID;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.enums.Role;
+import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.enums.UserRole;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -44,7 +44,7 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false, length = 50)
-    private Role role;
+    private UserRole role;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     @CreationTimestamp
