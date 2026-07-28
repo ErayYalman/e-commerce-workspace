@@ -8,6 +8,7 @@ import java.util.UUID;
 import org.hibernate.annotations.CreationTimestamp;
 import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.enums.OrderStatus;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -38,7 +39,11 @@ public class Order {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY,
+        cascade = CascadeType.ALL, orphanRemoval = true)
+        //cascade = CascadeType.ALL, OrderItem nesneleri Order ile ilişkili olduğunda, Order silindiğinde veya güncellendiğinde, 
+        // ilişkili OrderItem nesneleri de otomatik olarak silinir veya güncellenir. Bu, veri bütünlüğünü korumak için önemlidir
+        // ayrıca, orphanRemoval = true, OrderItem nesneleri Order'dan kaldırıldığında otomatik olarak silinmesini sağlar
     private List<OrderItem> orderItems;
     
     @Column(name = "total_price", nullable = false, precision = 10, scale = 2)

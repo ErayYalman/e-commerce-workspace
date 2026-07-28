@@ -1,7 +1,6 @@
 package com.ErayYalman.mini.e_commerce.and.e_wallet.platform.service.impl;
 
 
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,6 +11,7 @@ import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.dto.response.UserRes
 import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.entity.User;
 import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.enums.UserRole;
 import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.exception.EmailAlreadyExistsException;
+import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.exception.InvalidCredentialException;
 import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.mapper.UserMapper;
 import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.repository.UserRepository;
 import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.service.IUserService;
@@ -52,10 +52,10 @@ public class UserServiceImpl implements IUserService {
     @Transactional(readOnly = true) //sadece okuma işlemi yapacağımız için readOnly = true ekledik başka hiçbir işlem yapılmaz.
     public UserResponse loginUser(LoginRequest loginRequest) {
         User user = userRepository.findByEmail(loginRequest.getEmail())
-                .orElseThrow(() -> new BadCredentialsException("Invalid email or password"));
+                .orElseThrow(() -> new InvalidCredentialException());
 
         if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-            throw new BadCredentialsException("Invalid email or password");
+            throw new InvalidCredentialException();
         }
 
         return userMapper.toResponse(user);
