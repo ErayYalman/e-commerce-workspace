@@ -1,8 +1,8 @@
 package com.ErayYalman.mini.e_commerce.and.e_wallet.platform.controller.impl;
 
-import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.controller.IProductController;
 import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.dto.request.CreateProductRequest;
 import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.dto.request.UpdateProductRequest;
+import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.dto.response.PageResponse;
 import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.dto.response.ProductResponse;
 import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.service.impl.ProductServiceImpl;
 
@@ -49,8 +50,8 @@ public class ProductControllerImpl implements IProductController {
     @Override
     @GetMapping("/all")
     @ResponseStatus(HttpStatus.OK)
-    public List<ProductResponse> getAllProducts() {
-        return productService.getAllProducts();
+    public PageResponse<ProductResponse> getAllProducts(Pageable pageable) {
+        return productService.getAllProducts(pageable);
     }
 
     @Override
@@ -67,5 +68,8 @@ public class ProductControllerImpl implements IProductController {
     public void deleteProduct(@PathVariable UUID productId) {
         productService.deleteProduct(productId);
     }
+
+    
+    
     
 }

@@ -1,10 +1,12 @@
 package com.ErayYalman.mini.e_commerce.and.e_wallet.platform.controller;
 
-import java.util.List;
 import java.util.UUID;
+
+import org.springframework.data.domain.Pageable;
 
 import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.dto.request.CreateProductRequest;
 import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.dto.request.UpdateProductRequest;
+import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.dto.response.PageResponse;
 import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.dto.response.ProductResponse;
 
 public interface IProductController {
@@ -12,7 +14,8 @@ public interface IProductController {
 
     ProductResponse getProductById(UUID productId);
 
-    List<ProductResponse> getAllProducts(); 
+    PageResponse<ProductResponse> getAllProducts(Pageable pageable); //bu method, pageable parametresi ile birlikte tüm ürünleri sayfalı 
+    // olarak döndürecek şekilde tasarlanmıştır.
 
     ProductResponse updateProduct(UUID productId, UpdateProductRequest productRequest);
     

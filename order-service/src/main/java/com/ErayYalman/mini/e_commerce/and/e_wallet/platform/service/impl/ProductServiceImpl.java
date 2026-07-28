@@ -3,11 +3,14 @@ package com.ErayYalman.mini.e_commerce.and.e_wallet.platform.service.impl;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.dto.request.CreateProductRequest;
 import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.dto.request.UpdateProductRequest;
+import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.dto.response.PageResponse;
 import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.dto.response.ProductResponse;
 import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.entity.Product;
 import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.exception.ProductNotFoundException;
@@ -49,11 +52,20 @@ public class ProductServiceImpl implements IProductService {
     }
 
     @Override
-    public List<ProductResponse> getAllProducts() {
-        return productRepository.findAll()
-                .stream() // Stream kullanarak tüm ürünleri dolaşıyoruz
-                .map(productMapper::toResponse) // Her bir ürünü ProductResponse'a dönüştürüyoruz
-                .toList();
+    @Transactional(readOnly = true)
+    public PageResponse<ProductResponse> getAllProducts(Pageable pageable) {
+        Page<ProductResponse> productPage = productRepository.findAll(pageable)
+                .map(productMapper::toResponse);
+        return PageResponse.<ProductResponse>builder() //PageResponse sınıfının builder metodunu kullanarak bir PageResponse nesnesi 
+        // oluşturuyoruz. Bu nesne, sayfalama bilgilerini ve ürün listesini içeriyor.
+                .content(productPage.getContent())
+                .page(productPage.getNumber())
+                .size(productPage.getSize())
+                .totalElements(productPage.getTotalElements())
+                .totalPages(productPage.getTotalPages())
+                .first(productPage.isFirst())
+                .last(productPage.isLast())
+                .build();
     }
 
     @Override
@@ -73,5 +85,7 @@ public class ProductServiceImpl implements IProductService {
                 .orElseThrow(() -> new RuntimeException("Product not found with id: " + productId));
         productRepository.delete(product);
     }
+
+   
     
 }
