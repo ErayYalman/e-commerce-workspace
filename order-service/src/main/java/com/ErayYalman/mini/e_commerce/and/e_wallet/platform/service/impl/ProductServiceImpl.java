@@ -1,6 +1,5 @@
 package com.ErayYalman.mini.e_commerce.and.e_wallet.platform.service.impl;
 
-import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;

@@ -9,5 +9,9 @@ public class UserNotFoundException extends BusinessException {
         //super ile, BusinessException sınıfının constructor'ını çağırıyoruz ve null değerini errorCode parametresi olarak veriyoruz.
         // Bu sayede, UserNotFoundException sınıfı oluşturulduğunda, BusinessException sınıfının constructor'ı çağrılır ve hata mesajı iletilir.
     }
+
+    public UserNotFoundException(String string) {
+        super(ErrorCode.USER_NOT_FOUND, string);
+    }
     
 }

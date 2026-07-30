@@ -10,12 +10,12 @@ import lombok.Setter;
 @Setter
 public class LoginRequest {
 
-    @NotBlank
+    @NotBlank(message = "Email is required")
     @Size(max = 255)
     @Email
     private String email; 
 
-    @NotBlank
+    @NotBlank(message = "Password is required")
     @Size(max = 255)
     private String password;
 
