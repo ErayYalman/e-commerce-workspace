@@ -56,11 +56,11 @@ public class JwtService {
 
     }
 
-    private String extractUsername(String token) {
+    public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject); //token'dan kullanıcı adını alıyoruz. yani email adresini alıyoruz.
     }
 
-    private Date extractExpiration(String token) {
+    public Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration); //token'dan geçerlilik süresini alıyoruz.
     }
 

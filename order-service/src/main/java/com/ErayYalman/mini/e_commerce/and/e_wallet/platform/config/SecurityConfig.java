@@ -1,5 +1,6 @@
 package com.ErayYalman.mini.e_commerce.and.e_wallet.platform.config;
 
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -8,16 +9,24 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.security.CustomUserDetailsService;
+import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.security.jwt.JwtAuthenticationFilter;
+
+import lombok.RequiredArgsConstructor;
 
 @Configuration //configuration sınıfı demek, Spring'in bu sınıfı bir konfigürasyon sınıfı olarak tanıyacağı anlamına gelir. 
 // Bu sınıf, uygulamanın güvenlik yapılandırmasını içerecek ve Spring Security'nin nasıl çalışacağını belirleyecektir.
+@EnableConfigurationProperties(JwtProperties.class) //JwtProperties sınıfını konfigürasyon özellikleri olarak tanımlar.
+@RequiredArgsConstructor
 public class SecurityConfig {
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final AuthenticationProvider authenticationProvider;
+
     
     @Bean //Spring'in bu metodu bir bean olarak yönetmesini sağlar. Bu, PasswordEncoder nesnesinin Spring konteyneri
     //  tarafından yönetileceği ve gerektiğinde başka sınıflar tarafından kullanılabileceği anlamına gelir.
@@ -39,6 +48,9 @@ public class SecurityConfig {
                             "/v3/api-docs/**"
                         ).permitAll() // Belirli bir URL desenine izin verir. Bu durumda, "/api/v1/auth/**" ile başlayan tüm istekler yetkilendirme gerektirmeden erişilebilir.
                         .anyRequest().authenticated() // Diğer tüm isteklerin kimlik doğrulaması gerektirdiğini belirtir.
+                )
+                .authenticationProvider(authenticationProvider) //AuthenticationProvider'ı yapılandırır. Bu, kullanıcı doğrulama işlemlerini yönetir.
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class
                 );
         return http.build();
     }

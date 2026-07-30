@@ -41,6 +41,6 @@ public class AuthserviceImpl implements IAuthService {
                 .type("Bearer")
                 .expiresAt(jwtService.getexpirationInstant()) //token'ın geçerlilik süresini ayarlıyoruz. yani token'ın ne kadar süre geçerli olacağını belirliyoruz.
                 .user(userMapper.toResponse(user))
-                .build();
+                .build(); 
     }
 }
