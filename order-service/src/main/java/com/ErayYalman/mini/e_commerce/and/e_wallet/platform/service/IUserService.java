@@ -1,13 +1,21 @@
 package com.ErayYalman.mini.e_commerce.and.e_wallet.platform.service;
 
-import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.dto.request.LoginRequest;
-import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.dto.request.RegisterRequest;
+
+import java.util.UUID;
+
+import org.springframework.data.domain.Pageable;
+
+import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.dto.response.PageResponse;
 import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.dto.response.UserResponse;
 
 public interface IUserService {
 
-    UserResponse registerUser(RegisterRequest registerRequest);
+    PageResponse<UserResponse> getAllUsers(Pageable pageable);
 
-    UserResponse loginUser(LoginRequest loginRequest);
+    UserResponse getUserById(UUID userId);
+
+  //  UserResponse updateUser(UUID userId, UpdateUserRequest userRequest);
+
+    void deleteUser(UUID userId);
     
 }

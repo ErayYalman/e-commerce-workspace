@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,6 +37,7 @@ public class ProductControllerImpl implements IProductController {
     @Override
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasRole('ADMIN')")
     public ProductResponse createProduct(@RequestBody @Valid CreateProductRequest productRequest) {
         return productService.createProduct(productRequest);
     }
@@ -57,6 +59,7 @@ public class ProductControllerImpl implements IProductController {
     @Override
     @PutMapping("/{productId}")
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasRole('ADMIN')")
     public ProductResponse updateProduct(@PathVariable UUID productId, @RequestBody @Valid UpdateProductRequest productRequest) {
         return productService.updateProduct(productId, productRequest);
         
@@ -65,6 +68,7 @@ public class ProductControllerImpl implements IProductController {
     @Override
     @DeleteMapping("/{productId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteProduct(@PathVariable UUID productId) {
         productService.deleteProduct(productId);
     }

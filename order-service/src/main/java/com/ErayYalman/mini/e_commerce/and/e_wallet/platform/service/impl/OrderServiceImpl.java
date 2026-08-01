@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,11 +20,10 @@ import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.enums.OrderStatus;
 import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.exception.InsufficientStockException;
 import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.exception.OrderNotFoundException;
 import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.exception.ProductNotFoundException;
-import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.exception.UserNotFoundException;
 import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.mapper.OrderMapper;
 import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.repository.OrderRepository;
 import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.repository.ProductRepository;
-import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.repository.UserRepository;
+import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.security.CustomUserDetails;
 import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.service.IOrderService;
 
 import lombok.RequiredArgsConstructor;
@@ -34,14 +34,12 @@ import lombok.RequiredArgsConstructor;
 public class OrderServiceImpl implements IOrderService {
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
-    private final UserRepository userRepository;
     private final OrderMapper orderMapper;
 
 
     @Override
-    public OrderResponse createOrder(UUID userId, OrderRequest orderRequest) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(userId));
+    public OrderResponse createOrder(@AuthenticationPrincipal CustomUserDetails userDetails, OrderRequest orderRequest) {
+        User user = userDetails.getUser();
         
         Order order = new Order();
         order.setUser(user);
@@ -84,11 +82,8 @@ public class OrderServiceImpl implements IOrderService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<OrderResponse> getOrdersByUserId(UUID userId) {
-        if(!userRepository.existsById(userId)) {
-            throw new UserNotFoundException(userId);
-        }
-        return orderRepository.findAllByUserId(userId)
+    public List<OrderResponse> getOrdersByUserId(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        return orderRepository.findAllByUserId(userDetails.getUser().getId())
                 .stream()
                 .map(orderMapper::toResponse)
                 .toList();

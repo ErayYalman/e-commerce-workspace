@@ -7,6 +7,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -21,11 +22,13 @@ import lombok.RequiredArgsConstructor;
 
 @Configuration //configuration sınıfı demek, Spring'in bu sınıfı bir konfigürasyon sınıfı olarak tanıyacağı anlamına gelir. 
 // Bu sınıf, uygulamanın güvenlik yapılandırmasını içerecek ve Spring Security'nin nasıl çalışacağını belirleyecektir.
+@EnableMethodSecurity //method seviyesinde güvenlik kontrolleri yapmamızı sağlar. Örneğin, belirli bir metoda erişimi 
+// kısıtlamak için kullanılabilir. @PreAuthorize, @PostAuthorize gibi anotasyonlarını kullanmak için.
 @EnableConfigurationProperties(JwtProperties.class) //JwtProperties sınıfını konfigürasyon özellikleri olarak tanımlar.
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final AuthenticationProvider authenticationProvider;
+    
 
     
     @Bean //Spring'in bu metodu bir bean olarak yönetmesini sağlar. Bu, PasswordEncoder nesnesinin Spring konteyneri
@@ -36,7 +39,7 @@ public class SecurityConfig {
 
     @Bean //Spring Security'nin güvenlik filtre zincirini yapılandırmak için kullanılan bir bean tanımlar. kendimizın güvenlik yapılandırmasını
     //  özelleştirmek için kullanılır.
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationProvider authenticationProvider) throws Exception {
          http
                 .csrf(csrf -> csrf.disable()) // her forma gizli bir token ekleyerek CSRF saldırılarına karşı koruma sağlar. 
                 // Ancak, session kullanmayacağız jwt kullanacağımız için CSRF korumasını devre dışı bırakıyoruz.

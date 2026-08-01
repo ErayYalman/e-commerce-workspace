@@ -1,64 +1,62 @@
 package com.ErayYalman.mini.e_commerce.and.e_wallet.platform.service.impl;
 
 
-import org.springframework.security.crypto.password.PasswordEncoder;
+import java.util.UUID;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.dto.request.LoginRequest;
-import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.dto.request.RegisterRequest;
+import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.dto.response.PageResponse;
 import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.dto.response.UserResponse;
 import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.entity.User;
-import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.enums.UserRole;
-import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.exception.EmailAlreadyExistsException;
-import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.exception.InvalidCredentialException;
+import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.exception.UserNotFoundException;
 import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.mapper.UserMapper;
 import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.repository.UserRepository;
 import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.service.IUserService;
 
+import lombok.RequiredArgsConstructor;
+
 
 @Service
 @Transactional 
+@RequiredArgsConstructor
 public class UserServiceImpl implements IUserService {
     private final UserRepository userRepository;
-
     private final UserMapper userMapper;
 
-    private final PasswordEncoder passwordEncoder;
-
-    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.userMapper = userMapper;
-        this.passwordEncoder = passwordEncoder;
+    @Override
+    @Transactional(readOnly = true)
+    public PageResponse<UserResponse> getAllUsers(Pageable pageable) {
+         Page<User> userPage = userRepository.findAll(pageable);
+         return PageResponse.<UserResponse>builder()
+                 .content(userPage.getContent().stream().map(userMapper::toResponse).toList())
+                 .page(userPage.getNumber())
+                 .size(userPage.getSize())
+                 .totalElements(userPage.getTotalElements())
+                 .totalPages(userPage.getTotalPages())
+                 .first(userPage.isFirst())
+                 .last(userPage.isLast())
+                 .build();
     }
 
 
-
     @Override
-    public UserResponse registerUser(RegisterRequest registerRequest) {
-        if (userRepository.existsByEmail(registerRequest.getEmail())) {
-            throw new EmailAlreadyExistsException("Email already exists");
-        }
-        User user = userMapper.toEntity(registerRequest);
-        user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
-        user.setRole(UserRole.CUSTOMER);
-
-        User savedUser = userRepository.save(user);
-        return userMapper.toResponse(savedUser);
-
-    }
-
-    @Override
-    @Transactional(readOnly = true) //sadece okuma işlemi yapacağımız için readOnly = true ekledik başka hiçbir işlem yapılmaz.
-    public UserResponse loginUser(LoginRequest loginRequest) {
-        User user = userRepository.findByEmail(loginRequest.getEmail())
-                .orElseThrow(() -> new InvalidCredentialException());
-
-        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-            throw new InvalidCredentialException();
-        }
-
+    @Transactional(readOnly = true)
+    public UserResponse getUserById(UUID userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + userId));
         return userMapper.toResponse(user);
+    }
+
+
+    @Override
+    @Transactional
+    public void deleteUser(UUID userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + userId));
+        userRepository.delete(user);
     }
     
 }

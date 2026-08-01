@@ -22,7 +22,7 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() { // Kullanıcının yetkilerini (rollerini) döndürür. 
     // Bu, Spring Security'nin kullanıcının hangi yetkilere sahip olduğunu bilmesini sağlar.
-       return List.of(new SimpleGrantedAuthority(user.getRole().name()));
+       return List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
         
     }
 

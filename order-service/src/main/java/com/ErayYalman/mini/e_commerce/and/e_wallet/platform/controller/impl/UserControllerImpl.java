@@ -1,20 +1,22 @@
 package com.ErayYalman.mini.e_commerce.and.e_wallet.platform.controller.impl;
 
 
+import java.util.UUID;
+
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.controller.IUserController;
-import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.dto.request.LoginRequest;
-import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.dto.request.RegisterRequest;
+import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.dto.response.PageResponse;
 import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.dto.response.UserResponse;
 import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.service.impl.UserServiceImpl;
-
-import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/users")
@@ -26,17 +28,26 @@ public class UserControllerImpl implements IUserController {
         }
 
         @Override
-        @PostMapping("/register")
-        @ResponseStatus(HttpStatus.CREATED) 
-        public UserResponse registerUser(@Valid @RequestBody RegisterRequest registerRequest) {
-            return userService.registerUser(registerRequest);
+        @GetMapping("/all")
+        @ResponseStatus(HttpStatus.OK)
+        @PreAuthorize("hasRole('ADMIN')")
+        public PageResponse<UserResponse> getAllUsers(Pageable pageable) {
+            return userService.getAllUsers(pageable);
         }
 
         @Override
-        @PostMapping("/login")
+        @GetMapping("/{userId}")
         @ResponseStatus(HttpStatus.OK)
-        public UserResponse loginUser(@Valid @RequestBody LoginRequest loginRequest) {
-            return userService.loginUser(loginRequest);
+        public UserResponse getUserById(@PathVariable UUID userId) {
+            return userService.getUserById(userId);
+        }
+
+        @Override
+        @DeleteMapping("/{userId}")
+        @ResponseStatus(HttpStatus.NO_CONTENT)
+        @PreAuthorize("hasRole('ADMIN')")
+        public void deleteUser(@PathVariable UUID userId) {
+            userService.deleteUser(userId);
         }
 
     

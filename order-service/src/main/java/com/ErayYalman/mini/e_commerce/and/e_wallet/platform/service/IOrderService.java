@@ -5,13 +5,14 @@ import java.util.UUID;
 
 import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.dto.request.OrderRequest;
 import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.dto.response.OrderResponse;
+import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.security.CustomUserDetails;
 
 public interface IOrderService {
     
-    OrderResponse createOrder(UUID userId, OrderRequest orderRequest);
+    OrderResponse createOrder(CustomUserDetails userDetails, OrderRequest orderRequest);
 
     OrderResponse getOrderById(UUID orderId);   
 
-    List<OrderResponse> getOrdersByUserId(UUID userId);
+    List<OrderResponse> getOrdersByUserId(CustomUserDetails userDetails);
 
 }
