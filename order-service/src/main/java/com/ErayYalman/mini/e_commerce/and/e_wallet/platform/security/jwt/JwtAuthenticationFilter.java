@@ -9,7 +9,6 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.security.CustomUserDetails;
 import com.ErayYalman.mini.e_commerce.and.e_wallet.platform.security.CustomUserDetailsService;
 
 import jakarta.servlet.FilterChain;

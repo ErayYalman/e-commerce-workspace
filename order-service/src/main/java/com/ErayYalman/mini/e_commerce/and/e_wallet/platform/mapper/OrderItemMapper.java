@@ -12,6 +12,7 @@ public interface OrderItemMapper {
     
     @Mapping(source = "product.id", target = "productId")
     @Mapping(source = "product.name", target = "productName")
+    @Mapping(target = "totalPrice", ignore = true)
     OrderItemResponse toResponse(OrderItem orderItem);
 
 }

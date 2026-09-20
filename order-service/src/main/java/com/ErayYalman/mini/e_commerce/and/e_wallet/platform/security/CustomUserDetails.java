@@ -2,7 +2,6 @@ package com.ErayYalman.mini.e_commerce.and.e_wallet.platform.security;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
 
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
